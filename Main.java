@@ -1,13 +1,13 @@
 /*For testing purposes we will be using the directory: C:\Users\vanes\Desktop\Directory*/
+import org.eclipse.jdt.core.dom.*;
 import java.nio.file.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.*;
 import java.io.*;
-import org.eclipse.jdt.core.dom.*;
 
 public class Main {
-	public static void main (String[] args) throws FileNotFoundException {
+	public static void main (String[] args) throws FileNotFoundException, IOException {
 		Path path = Paths.get(args[0]);
 		System.out.println("Path: "+ path);
 
@@ -24,26 +24,7 @@ public class Main {
 
 		//Prints out all the java files
 		for (File f: files) {
-			System.out.println("Java Files: "+ f.getName());
-
-			String fileInString = f.toString();
-
-			Scanner scanner = new Scanner(new File(fileInString));
-			String theString = "";
-
-			theString = scanner.nextLine();
-			while (scanner.hasNextLine()) {
-				theString = theString /*+ "\n" */+ scanner.nextLine();
-			}
-
-			char[] charArray = theString.toCharArray();
-
-			for (char c: charArray) {
-					System.out.println(c);
-			}
-
-			//Call parsing method to parse each CompilationUnit
-			m.parse(charArray);
+			m.parse(m.readFiletoString(f.toString()));
 		}
 	}
 
@@ -73,17 +54,34 @@ public class Main {
         	}
         });
     }
+	
+	public char[] readFiletoString (String filePath) throws IOException {
+		StringBuilder fileData = new StringBuilder(1000);
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		
+		char[] buf = new char[10];
+		int numRead = 0;
+		while ((numRead = reader.read(buf)) != -1) {
+			System.out.println(numRead);
+			String readData = String.valueOf(buf, 0, numRead);
+			fileData.append(readData);
+			buf = new char[1024];
+		}
+		
+		reader.close();
+		
+		return fileData.toString().toCharArray();
+	}
 
 	public void parse(char[] sourceCode) {
 		System.out.println("IN PARSE METHOD");
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		ASTParser parser = ASTParser.newParser(AST.JLS9);
 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(sourceCode);
 		parser.setResolveBindings(true);
 
 		CompilationUnit cu = (CompilationUnit)parser.createAST(null);
-			
 			
 		TypeVisitor v = new TypeVisitor();
 		System.out.println("created a new instance of TypeVisitor");

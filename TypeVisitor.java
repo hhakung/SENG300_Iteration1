@@ -6,7 +6,6 @@ public class TypeVisitor extends ASTVisitor {
 	int declarationCounter = 0;
 	
 	public boolean visit(VariableDeclarationStatement node) {
-		
 		System.out.println("In visit method");
 		for (Iterator<?> iter = node.fragments().iterator(); iter.hasNext();) {
 		
