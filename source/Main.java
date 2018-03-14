@@ -43,11 +43,15 @@ public class Main {
 
 		//reads all java files and places contents into charArray
 		int totalNumDeclarations = 0;
+		int totalNumReferences = 0;
 		for (File f: files) {
-			totalNumDeclarations = totalNumDeclarations + m.parse(m.readFiletoString(f.toString()), f.getName());
+			int[] result = m.parse(m.readFiletoString(f.toString()), f.getName());
+			totalNumDeclarations = totalNumDeclarations + result[0];
+			totalNumReferences = totalNumReferences + result[1];
 		}
 		
-		System.out.println("Total number of declarations of " + type + " is: " + totalNumDeclarations);
+		System.out.println("Total number of declarations of " + type + " in this directory is: " + totalNumDeclarations);
+		System.out.println("Total number of references of " + type + " in this directory is: " + totalNumReferences);
 	}
 
 	/**
@@ -109,8 +113,8 @@ public class Main {
 	 * and gather information about the AST nodes. 
 	 * @param sourceCode
 	 */
-	public int parse(char[] sourceCode, String unitName) {
-		System.out.println("IN PARSE METHOD");
+	public int[] parse(char[] sourceCode, String unitName) {
+		//System.out.println("IN PARSE METHOD");
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -122,18 +126,22 @@ public class Main {
 		
 		CompilationUnit cu = (CompilationUnit)parser.createAST(null);
 		
-		if (cu.getAST().hasResolvedBindings()) {
-		    System.out.println("Binding activated.");
-		}
-		else {
-		    System.out.println("Binding is not activated.");
-		}
+//		if (cu.getAST().hasResolvedBindings()) {
+//		    System.out.println("Binding activated.");
+//		}
+//		else {
+//		    System.out.println("Binding is not activated.");
+//		}
 		
 		TypeVisitor v = new TypeVisitor();
-		System.out.println("created a new instance of TypeVisitor");
+		//System.out.println("created a new instance of TypeVisitor");
 		cu.accept(v);
-		System.out.println("finished visiting");
+		//System.out.println("finished visiting");
 		
-		return v.getDeclarationCounter();
+		int[] returnArray = new int[2];
+		returnArray[0] = v.getDeclarationCounter();
+		returnArray[1] = v.getReferenceCounter();
+		
+		return returnArray;
 	}
 }
