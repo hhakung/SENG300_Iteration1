@@ -27,13 +27,13 @@ public class Main {
 	public static void main (String[] args) throws FileNotFoundException, IOException {
 		//Grabbing command line arguments
 		path = Paths.get(args[0]);
-		System.out.println("Path: "+ path);
+		//System.out.println("Path: "+ path);
 
 		String textPath = args[0];
-		System.out.println("textPath:"+textPath);
+		//System.out.println("textPath:"+textPath);
 
 		type = args[1];
-		System.out.println("Type: "+type);
+		//System.out.println("Type: "+type);
 
 		Main m = new Main();
 		m.listFiles(textPath);	//Calling listFiles function to grab the list of files within a directory 
@@ -50,8 +50,7 @@ public class Main {
 			totalNumReferences = totalNumReferences + result[1];
 		}
 		
-		System.out.println("Total number of declarations of " + type + " in this directory is: " + totalNumDeclarations);
-		System.out.println("Total number of references of " + type + " in this directory is: " + totalNumReferences);
+		System.out.println(type + ". Declarations found: " + totalNumDeclarations + "; references found: " + totalNumReferences + ".");
 	}
 
 	/**
@@ -64,11 +63,11 @@ public class Main {
 		 //get all the files from a directory
 		 File[] fList = directory.listFiles();
 		 
-		 for (File file : fList) {
-			 if (file.isFile()) {
-				 System.out.println(file.getName());
-			}
-		}
+//		 for (File file : fList) {
+//			 if (file.isFile()) {
+//				 System.out.println(file.getName());
+//			}
+//		}
 	}
 
 	/**
