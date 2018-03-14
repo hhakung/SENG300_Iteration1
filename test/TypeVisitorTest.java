@@ -32,17 +32,17 @@ public class TypeVisitorTest {
 	/**
 	 * Checks that the overridden visit can be called
 	 */
-	@Test
-	public void testVisit() {
-		TypeVisitor v = new TypeVisitor();
-		
-		class VariableDeclarationStatementStub extends VariableDeclarationStatement {
-
-			VariableDeclarationStatementStub(AST ast) {
-				super(ast);
-				// TODO Auto-generated constructor stub
-			}
-		
-	}
+//	@Test
+//	public void testVisit() {
+//		TypeVisitor v = new TypeVisitor();
+//		
+//		class VariableDeclarationStatementStub extends VariableDeclarationStatement {
+//
+//			VariableDeclarationStatementStub(AST ast) {
+//				super(ast);
+//				// TODO Auto-generated constructor stub
+//			}
+//		
+//	}
 
 }

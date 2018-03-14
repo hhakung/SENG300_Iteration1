@@ -21,16 +21,18 @@ import java.io.*;
 
 public class Main {
 	private static final IJavaProject A4_V3 = null;
+	public static String type;
+	public static Path path;
 
 	public static void main (String[] args) throws FileNotFoundException, IOException {
 		//Grabbing command line arguments
-		Path path = Paths.get(args[0]);
+		path = Paths.get(args[0]);
 		System.out.println("Path: "+ path);
 
 		String textPath = args[0];
 		System.out.println("textPath:"+textPath);
 
-		String type = args[1];
+		type = args[1];
 		System.out.println("Type: "+type);
 
 		Main m = new Main();
@@ -40,9 +42,12 @@ public class Main {
 		File[] files = m.finder(textPath);
 
 		//reads all java files and places contents into charArray
+		int totalNumDeclarations = 0;
 		for (File f: files) {
-			m.parse(m.readFiletoString(f.toString()));
+			totalNumDeclarations = totalNumDeclarations + m.parse(m.readFiletoString(f.toString()), f.getName());
 		}
+		
+		System.out.println("Total number of declarations of " + type + " is: " + totalNumDeclarations);
 	}
 
 	/**
@@ -89,7 +94,6 @@ public class Main {
 		char[] buf = new char[10];
 		int numRead = 0;
 		while ((numRead = reader.read(buf)) != -1) {
-			System.out.println(numRead);
 			String readData = String.valueOf(buf, 0, numRead);
 			fileData.append(readData);
 			buf = new char[1024];
@@ -105,20 +109,16 @@ public class Main {
 	 * and gather information about the AST nodes. 
 	 * @param sourceCode
 	 */
-	public void parse(char[] sourceCode) {
+	public int parse(char[] sourceCode, String unitName) {
 		System.out.println("IN PARSE METHOD");
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(sourceCode);
 		parser.setResolveBindings(true);
-
-		
-		String [] sources = {"C:\\Users\\vanes\\Desktop\\eclipseWorkspace\\A4_V3\\src"};
-		String [] classpath = {}; //if no class path is set then it should just default to current directories
-		
-		parser.setEnvironment(classpath, sources, new String[] { "UTF-8"}, true);
-
+		parser.setBindingsRecovery(true);
+		parser.setEnvironment(null,  null,  null,  true);
+		parser.setUnitName(unitName);
 		
 		CompilationUnit cu = (CompilationUnit)parser.createAST(null);
 		
@@ -133,5 +133,7 @@ public class Main {
 		System.out.println("created a new instance of TypeVisitor");
 		cu.accept(v);
 		System.out.println("finished visiting");
+		
+		return v.getDeclarationCounter();
 	}
 }
