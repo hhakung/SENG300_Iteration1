@@ -1,3 +1,9 @@
+package source;
+
+/**
+ * Class extends to ASTVisitor in which we call to be able to 
+ * traverse the AST tree and retrieve information on the ASTNodes. 
+ */
 import java.util.Iterator;
 import org.eclipse.jdt.core.dom.*;
 
@@ -9,34 +15,28 @@ public class TypeVisitor extends ASTVisitor {
 		System.out.println("In visit method");
 		for (Iterator<?> iter = node.fragments().iterator(); iter.hasNext();) {
 		
+			//Identifying the number of declarations made
 			VariableDeclarationFragment fragment = (VariableDeclarationFragment) iter.next();
 			IVariableBinding binding = fragment.resolveBinding();
 			declarationCounter++;
-			System.out.println("binding variable declaration: "+binding.getVariableDeclaration());
+			
 			System.out.println("binding: " +binding);
 			
+			//The following lines would be used to get the type of each declaration that was identified
 			//String typeFound = binding.getVariableDeclaration().toString();
 			//String typeSplit = typeFound.split(" "); //Simply get the type that was declared 
-			//VariableBindingManager manager = new VariableBindingManager(fragment);
-			//localVariableManagers.put(binding, manager);
+	
 		}
 		System.out.println("# of Declarations: "+declarationCounter);
 		return true;
 	}
 /*	
-	//reference count 
+	//Checks on the references  
 	public boolean visitNode(SimpleName node){
 		if (binding.equals(simpleName.resolveBinding())) {};
 		
-		
-		IBinding binding = node.resolveBinding();
-		if (localVariableManagers.containsKey(binding)) {
-			VariableBindingManager manager = localVariableManagers.get(binding);
-			manager.variableRefereneced(node);
-		}
 		return;
 	}
 */
 }
-
 

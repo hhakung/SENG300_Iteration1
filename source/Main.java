@@ -1,4 +1,17 @@
+package source;
+
 /*For testing purposes we will be using the directory: C:\Users\vanes\Desktop\Directory*/
+/*Program takes in two command line arguments pathname and type. The pathname is simply the directory in which the user wants to be 
+ * parsed and the type represents what the user would like to keep track of in respects to the number of declarations and references to 
+ * that type. 
+ * 
+ * Actual functionality in the program:
+ * -Takes in all the java files from the directory and creates an AST tree
+ * -Parses them 
+ * -Is able to identify the total number of declarations made within each file (does not differentiate them in respects to their types)
+ * -Binding DOES not work and that is why we cannot complete the assignment to its specifications 
+ */
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.dom.*;
 import java.nio.file.*;
 import java.io.File;
@@ -7,7 +20,10 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+	private static final IJavaProject A4_V3 = null;
+
 	public static void main (String[] args) throws FileNotFoundException, IOException {
+		//Grabbing command line arguments
 		Path path = Paths.get(args[0]);
 		System.out.println("Path: "+ path);
 
@@ -18,11 +34,12 @@ public class Main {
 		System.out.println("Type: "+type);
 
 		Main m = new Main();
-		m.listFiles(textPath);
+		m.listFiles(textPath);	//Calling listFiles function to grab the list of files within a directory 
 
+		//Picks out all the .java files
 		File[] files = m.finder(textPath);
 
-		//Prints out all the java files
+		//reads all java files and places contents into charArray
 		for (File f: files) {
 			m.parse(m.readFiletoString(f.toString()));
 		}
@@ -45,6 +62,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Picks out all the .java files within the list of files from a directory
+	 * @param directoryName
+	 * @return the .java files by filename
+	 */
 	public File[] finder( String directoryName) {
 		File dir = new File(directoryName);
 
@@ -55,6 +77,11 @@ public class Main {
         });
     }
 	
+	/**
+	 * Reads all .java files and returns all their contents within a charArray
+	 * @param the file name of the file to have it's contents stored
+	 * @return the charArray
+	 */
 	public char[] readFiletoString (String filePath) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -73,16 +100,35 @@ public class Main {
 		return fileData.toString().toCharArray();
 	}
 
+	/**
+	 * Creates a parser and an AST tree. Also calls for ASTVisitor in order to traverse the tree 
+	 * and gather information about the AST nodes. 
+	 * @param sourceCode
+	 */
 	public void parse(char[] sourceCode) {
 		System.out.println("IN PARSE METHOD");
-		ASTParser parser = ASTParser.newParser(AST.JLS9);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(sourceCode);
 		parser.setResolveBindings(true);
 
+		
+		String [] sources = {"C:\\Users\\vanes\\Desktop\\eclipseWorkspace\\A4_V3\\src"};
+		String [] classpath = {}; //if no class path is set then it should just default to current directories
+		
+		parser.setEnvironment(classpath, sources, new String[] { "UTF-8"}, true);
+
+		
 		CompilationUnit cu = (CompilationUnit)parser.createAST(null);
-			
+		
+		if (cu.getAST().hasResolvedBindings()) {
+		    System.out.println("Binding activated.");
+		}
+		else {
+		    System.out.println("Binding is not activated.");
+		}
+		
 		TypeVisitor v = new TypeVisitor();
 		System.out.println("created a new instance of TypeVisitor");
 		cu.accept(v);
