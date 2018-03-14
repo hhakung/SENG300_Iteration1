@@ -9,9 +9,8 @@ import org.eclipse.jdt.core.dom.*;
 
 public class TypeVisitor extends ASTVisitor {
 	
-	private int declarationCounter = 0;
-	private int referenceCounter = 0;
-	private IVariableBinding matchingBinding = null;
+	private int declarationCounter = 0; // count of only the type declarations
+	private int referenceCounter = 0; // count of all the identifiers except for the type declarations
 	
 	public int getDeclarationCounter() {
 		return declarationCounter;
@@ -21,44 +20,46 @@ public class TypeVisitor extends ASTVisitor {
 		return referenceCounter;
 	}
 	
-	public boolean visit(VariableDeclarationStatement node) {
-		//System.out.println("In visit method");
-		for (Iterator<?> iter = node.fragments().iterator(); iter.hasNext();) {
+	/**
+	 * Overriding the visit function; counts how many of type declarations there are.
+	 * @param node TypeDeclaration node to visit
+	 * @return boolean to indicate whether to continue visiting the nodes of TypeDeclaration in the tree
+	 */
+	public boolean visit(TypeDeclaration node) {
+		ITypeBinding binding = node.resolveBinding();
+		String typeFound = binding.getQualifiedName();
 		
-			//Identifying the number of declarations made
-			VariableDeclarationFragment fragment = (VariableDeclarationFragment) iter.next();
-			IVariableBinding binding = fragment.resolveBinding();
-			
-			//System.out.println("binding: " +binding);
-			
-			//The following lines would be used to get the type of each declaration that was identified
-			String typeFound = binding.getVariableDeclaration().toString();
-			//System.out.println("typeFound: " +typeFound);
-			
-			String[] typeSplit = typeFound.split(" "); //Simply get the type that was declared 
-			if (typeSplit[0].equals(Main.type))
-			{
-				this.declarationCounter++;
-				matchingBinding = binding;
-			}
+		if (typeFound.equals(Main.type)) {
+			this.declarationCounter++;
 		}
 		
-		//System.out.println("# of Declarations: "+declarationCounter);
 		return true;
 	}
 	
+	/**
+	 * Overriding the visit function; counts how many of type references there are.
+	 * @param node SimpleName node to visit
+	 * @return boolean to indicate whether to continue visiting the nodes of SimpleName in the tree
+	 */
 	public boolean visit(SimpleName node) {
-		// while matchingBinding is null, don't do anything; 
-		// this means that we haven't yet to find the variable declaration of the type.
-		// Otherwise, check if the binding of the declaration and the binding of reference are the same.
-		// If they are, add 1 to the referenceCounter.
-		if (matchingBinding != null) {
-			if(matchingBinding.equals(node.resolveBinding())) {
-				referenceCounter++;
+		ITypeBinding binding = node.resolveTypeBinding();
+		if (binding != null) {
+			
+			// take care of both the qualified name and the simple name
+			if (binding.getQualifiedName().equals(Main.type) || binding.getName().equals(Main.type))
+			{
+				if (!node.isDeclaration()) {
+					// if the node is not a declaration, add 1 to referenceCounter
+					referenceCounter++;
+				}
+				else if (binding.isPrimitive()) {
+					// if the node is a declaration, but if it is primitive, it is NOT java type declaration.
+					// add 1 to referenceCounter
+					referenceCounter++;
+				}
 			}
 		}
-		
-		//System.out.println("# of References: "+referenceCounter);
+
 		return true;
 	}
 }

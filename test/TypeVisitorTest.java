@@ -27,22 +27,4 @@ public class TypeVisitorTest {
 		TypeVisitor v = new TypeVisitor();
 		assertTrue(v instanceof ASTVisitor);
 	}
-
-	
-	/**
-	 * Checks that the overridden visit can be called
-	 */
-//	@Test
-//	public void testVisit() {
-//		TypeVisitor v = new TypeVisitor();
-//		
-//		class VariableDeclarationStatementStub extends VariableDeclarationStatement {
-//
-//			VariableDeclarationStatementStub(AST ast) {
-//				super(ast);
-//				// TODO Auto-generated constructor stub
-//			}
-//		
-//	}
-
 }

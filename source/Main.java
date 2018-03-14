@@ -1,6 +1,5 @@
 package source;
 
-/*For testing purposes we will be using the directory: C:\Users\vanes\Desktop\Directory*/
 /*Program takes in two command line arguments pathname and type. The pathname is simply the directory in which the user wants to be 
  * parsed and the type represents what the user would like to keep track of in respects to the number of declarations and references to 
  * that type. 
@@ -8,8 +7,7 @@ package source;
  * Actual functionality in the program:
  * -Takes in all the java files from the directory and creates an AST tree
  * -Parses them 
- * -Is able to identify the total number of declarations made within each file (does not differentiate them in respects to their types)
- * -Binding DOES not work and that is why we cannot complete the assignment to its specifications 
+ * -Is able to identify the total number of type declarations and the total number of type references
  */
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.dom.*;
@@ -36,7 +34,6 @@ public class Main {
 		//System.out.println("Type: "+type);
 
 		Main m = new Main();
-		m.listFiles(textPath);	//Calling listFiles function to grab the list of files within a directory 
 
 		//Picks out all the .java files
 		File[] files = m.finder(textPath);
@@ -54,28 +51,11 @@ public class Main {
 	}
 
 	/**
-	* List all the files under a directory
-	* @param directoryName to be listed
-	*/
-	public void listFiles(String directoryName) {
-		 File directory = new File(directoryName);
-			 
-		 //get all the files from a directory
-		 File[] fList = directory.listFiles();
-		 
-//		 for (File file : fList) {
-//			 if (file.isFile()) {
-//				 System.out.println(file.getName());
-//			}
-//		}
-	}
-
-	/**
 	 * Picks out all the .java files within the list of files from a directory
 	 * @param directoryName
 	 * @return the .java files by filename
 	 */
-	public File[] finder( String directoryName) {
+	public File[] finder(String directoryName) {
 		File dir = new File(directoryName);
 
         return dir.listFiles(new FilenameFilter() {
@@ -110,7 +90,9 @@ public class Main {
 	/**
 	 * Creates a parser and an AST tree. Also calls for ASTVisitor in order to traverse the tree 
 	 * and gather information about the AST nodes. 
-	 * @param sourceCode
+	 * @param sourceCode the sourceCode to be parsed into a AST tree
+	 * @param unitName the name of the sourceCode file
+	 * @return array of int that contains the number of declarations and the number of references for this sourceCode
 	 */
 	public int[] parse(char[] sourceCode, String unitName) {
 		//System.out.println("IN PARSE METHOD");
